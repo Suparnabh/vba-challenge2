@@ -1,0 +1,109 @@
+Option Explicit
+
+Sub stock_price_calc()
+    
+    'Declare the variables
+    Dim i As Long, j As Variant, row As Integer
+    Dim Ticker As String, Opening_Price As Double, Closing_Price As Double, Yearly_Change As Double, Percent_Change As Double, Volume As Variant
+    Dim Max_Percent As Double, Min_Percent As Double, Max_Volume As Variant
+      
+       
+    'Setting output header
+            Cells(1, "K").Value = "Ticker"
+            Cells(1, "L").Value = "Opening Price"
+            Cells(1, "M").Value = "Closing Price"
+            Cells(1, "N").Value = "Yearly Change"
+            Cells(1, "O").Value = "Percent Change"
+            Cells(1, "P").Value = "Volume"
+            
+            Cells(2, "R").Value = "Greatest % Increase"
+            Cells(3, "R").Value = "Greatest % Decrease"
+            Cells(4, "R").Value = "Greatest Total Volume"
+            
+            Cells(1, "S").Value = "Ticker"
+            Cells(1, "T").Value = "Value"
+            
+    'Initializing the row counter for output and volume for first ticker of the sheet
+    row = 2
+    Opening_Price = Cells(2, "C").Value
+    
+    For i = 2 To 100000
+    
+                    
+            Volume = Volume + Cells(i, "G").Value
+        
+                If Cells(i, "A").Value <> Cells(i + 1, "A").Value Then
+        
+                    'Calculation of the output
+                    Ticker = Cells(i, "A").Value
+                    Closing_Price = Cells(i, "F").Value
+                    Yearly_Change = Closing_Price - Opening_Price
+                    Percent_Change = (Closing_Price - Opening_Price) / Opening_Price * 100
+                    
+                               
+                               
+                    'Print the outputs
+                    Cells(row, "K").Value = Ticker
+                    Cells(row, "L").Value = Opening_Price
+                    Cells(row, "M").Value = Closing_Price
+                    Cells(row, "N").Value = Yearly_Change
+                    Cells(row, "O").Value = Percent_Change & "%"
+                    Cells(row, "P").Value = Volume
+                    
+                    'Fill Color condition of the Yearly_Change Cell
+                    If Cells(row, "N").Value < 0 Then
+                    Cells(row, "N").Interior.ColorIndex = 3
+                    Else: Cells(row, "N").Interior.ColorIndex = 4
+                    End If
+                    
+                    'Fill Color condition of the Percent_Change Cell
+                    If Cells(row, "O").Value < 0 Then
+                    Cells(row, "O").Interior.ColorIndex = 3
+                    Else: Cells(row, "O").Interior.ColorIndex = 4
+                    End If
+                    
+                    'Getting the opening price for next ticker
+                    Opening_Price = Cells(i + 1, "C").Value
+                    
+                    'Initializing the row counter and volume for next ticker
+                    row = row + 1
+                    Volume = Cells(i + 1, "G").Value
+                End If
+                  
+    Next i
+    
+
+'Finding the Greatest % Increase, Decrease and Volume
+    
+    Max_Percent = WorksheetFunction.Max(Range("O:O"))
+    Cells(2, "T").Value = Max_Percent
+    Min_Percent = WorksheetFunction.Min(Range("O:O"))
+    Cells(3, "T").Value = Min_Percent
+    Max_Volume = WorksheetFunction.Max(Range("P:P"))
+    Cells(4, "T").Value = Max_Volume
+ 
+   
+    
+       For j = 2 To 10000
+    
+     'Finding the Ticker name for cells with max value
+    
+    
+    If Cells(j, "O").Value = Max_Percent Then
+        Cells(2, "S").Value = Cells(j, "K").Value
+        Cells(2, "T").Value = Max_Percent & "%"
+        
+        
+    ElseIf Cells(j, "O").Value = Min_Percent Then
+        Cells(3, "S").Value = Cells(j, "K").Value
+        Cells(3, "T").Value = Min_Percent & "%"
+        
+    
+   ElseIf Cells(j, "P").Value = Max_Volume Then
+        Cells(4, "S").Value = Cells(j, "K").Value
+        Cells(4, "T").Value = Max_Volume
+    End If
+     
+     Next j
+End Sub
+
